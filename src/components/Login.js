@@ -1,5 +1,5 @@
 import React from "react";
-import { googleProvider, signInWithGoogle } from "../firebase/auth";
+import {signInWithGoogle } from "../firebase/auth";
 import '../styles/login.css';
 import '../styles/login.css';
 
