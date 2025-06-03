@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { db } from "../firebase/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import '../styles/register.css';
+
 
 export default function Register({ user }) {
   const [selectedClass, setSelectedClass] = useState("");

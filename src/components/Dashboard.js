@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase/firebase";
-import { doc, onSnapshot, collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
+import {
+  doc,
+  onSnapshot,
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
+} from "firebase/firestore";
 import AttendanceButton from "./AttendanceButton";
 import "../styles/dashboard.css";
 
@@ -39,7 +48,9 @@ export default function Dashboard({ user }) {
         );
         const lastAttendanceSnap = await getDocs(lastAttendanceQuery);
         if (!lastAttendanceSnap.empty) {
-          setLastAttendance(lastAttendanceSnap.docs[0].data().timestamp.toDate());
+          setLastAttendance(
+            lastAttendanceSnap.docs[0].data().timestamp.toDate()
+          );
         } else {
           setLastAttendance(null);
         }
@@ -65,7 +76,7 @@ export default function Dashboard({ user }) {
     await auth.signOut();
   };
 
-  if (!userData) return <div>Loading profile...</div>;
+  if (!userData) return <div className="loading-container">Loading profile...</div>;
 
   const hour = currentTime.getHours();
   const greeting =
@@ -81,31 +92,92 @@ export default function Dashboard({ user }) {
     : "No attendance logged yet";
 
   return (
-    <div className="dashboard-container">
-      <h2>{greeting}, {userData.name}</h2>
-      <p>Email: <strong>{user.email}</strong></p>
-      <p>Class: <strong>{userData.class}</strong></p>
-      <p>Day: <strong>{dayOfWeek}</strong></p>
-      <p>Current Time: <strong>{currentTime.toLocaleString()}</strong></p>
+    <>
+      {/* Navigation Bar */}
+      <nav className="navbar">
+        <div className="navbar-brand">Attendance Tracker</div>
+        <div className="navbar-user">
+          <div className="user-avatar">{userData.name?.charAt(0)}</div>
+          <div className="user-info">
+            <span className="user-name">{userData.name}</span>
+            <span className="user-class">{userData.class}</span>
+          </div>
+          <button onClick={handleLogout} className="logout-button">
+            Logout
+          </button>
+        </div>
+      </nav>
 
-      <div className="top-buttons">
-        <AttendanceButton user={user} userData={userData} />
-        <button onClick={handleLogout} className="logout-button">
-          Logout
-        </button>
-      </div>
+      {/* Dashboard Content */}
+      <div className="dashboard-container">
+        {/* Header */}
+        <section className="dashboard-header">
+          <h2>.</h2>
+          <h2>.</h2>
+          
+        </section>
+        {/* Header */}
+        <section className="dashboard-header"> 
+          <h2>{greeting}, {userData.name}</h2>
+          <p>Welcome to your attendance dashboard. Stay consistent, stay on track.</p>
+        </section>
 
-      <div className="attendance-info">
-        <h3>Attendance Info</h3>
-        {loadingAttendance ? (
-          <p>Loading attendance data...</p>
-        ) : (
-          <>
-            <p>Total Attendance Logged: <strong>{attendanceCount}</strong></p>
-            <p>Last Attendance: <strong>{lastAttendanceText}</strong></p>
-          </>
-        )}
+        {/* User Info */}
+        <section className="user-info-card">
+          <div className="info-group">
+            <span className="info-label">Email</span>
+            <span className="info-value">{user.email}</span>
+          </div>
+          <div className="info-group">
+            <span className="info-label">Class</span>
+            <span className="info-value">{userData.class}</span>
+          </div>
+          <div className="info-group">
+            <span className="info-label">Day</span>
+            <span className="info-value">{dayOfWeek}</span>
+          </div>
+          <div className="info-group">
+            <span className="info-label">Current Time</span>
+            <span className="info-value">{currentTime.toLocaleString()}</span>
+          </div>
+        </section>
+
+        {/* Buttons */}
+        <div className="top-buttons">
+          <AttendanceButton user={user} userData={userData} />
+        </div>
+
+        {/* Attendance Stats */}
+        <section className="attendance-info">
+          <h3>Your Attendance Overview</h3>
+
+          {loadingAttendance ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+            </div>
+          ) : (
+            <div className="stats-container">
+              <div className="stat-card">
+                <div className="stat-value">{attendanceCount}</div>
+                <div className="stat-label">Total Sessions</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-value">
+                  {lastAttendance ? lastAttendance.toLocaleDateString() : "N/A"}
+                </div>
+                <div className="stat-label">Last Marked</div>
+              </div>
+            </div>
+          )}
+
+          <div className="last-attendance">
+            <p>
+              <span className="info-label">Last Attendance Time:</span>
+              <span className="info-value">{lastAttendanceText}</span>
+            </p>
+          </div>
+        </section>
       </div>
-    </div>
+    </>
   );
 }

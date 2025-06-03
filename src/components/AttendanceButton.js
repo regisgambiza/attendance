@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { db } from "../firebase/firebase";
-import { GeoPoint, collection, addDoc, query, where, getDocs } from "firebase/firestore";
-import { getDistanceInMeters } from "../utils/geoUtils";
-
-const SCHOOL_LAT = -26.9600556;
-const SCHOOL_LNG = 29.225;
-const ALLOWED_DISTANCE = 999999999999999999999;
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 
 export default function AttendanceButton({ user, userData }) {
     const [loading, setLoading] = useState(false);
@@ -21,12 +16,6 @@ export default function AttendanceButton({ user, userData }) {
         setLoading(true);
         setError("");
         setSuccess("");
-
-        if (!navigator.geolocation) {
-            setError("Geolocation is not supported by your browser.");
-            setLoading(false);
-            return;
-        }
 
         // Check if attendance already logged today
         try {
@@ -51,35 +40,20 @@ export default function AttendanceButton({ user, userData }) {
             return;
         }
 
-        // Get geolocation and log attendance if within allowed distance
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude } = position.coords;
-                const distance = getDistanceInMeters(latitude, longitude, SCHOOL_LAT, SCHOOL_LNG);
+        // Log attendance without location check
+        try {
+            await addDoc(collection(db, "attendance"), {
+                userId: user.uid,
+                name: userData.name,
+                class: userData.class,
+                timestamp: new Date(),
+            });
+            setSuccess("Attendance logged successfully!");
+        } catch (err) {
+            setError("Failed to log attendance: " + err.message);
+        }
 
-                if (distance <= ALLOWED_DISTANCE) {
-                    try {
-                        await addDoc(collection(db, "attendance"), {
-                            userId: user.uid,
-                            name: userData.name,
-                            class: userData.class,
-                            timestamp: new Date(),
-                            location: new GeoPoint(latitude, longitude),
-                        });
-                        setSuccess("Attendance logged successfully!");
-                    } catch (err) {
-                        setError("Failed to log attendance: " + err.message);
-                    }
-                } else {
-                    setError(`You are ${distance.toFixed(2)} meters away from school. Only within ${ALLOWED_DISTANCE} meters is allowed.`);
-                }
-                setLoading(false);
-            },
-            (err) => {
-                setError("Error getting location: " + err.message);
-                setLoading(false);
-            }
-        );
+        setLoading(false);
     };
 
     return (
@@ -89,7 +63,7 @@ export default function AttendanceButton({ user, userData }) {
                 disabled={loading}
                 className="attendance-button"
             >
-                {loading ? "Logging..." : "Log Attendance"}
+                {loading ? "Logging..." : "I'm Here!"}
             </button>
             {error && <p className="error-message">{error}</p>}
             {success && <p className="success-message">{success}</p>}

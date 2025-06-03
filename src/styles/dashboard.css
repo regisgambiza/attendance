@@ -1,5 +1,5 @@
 /* ===== MODERN ATTENDANCE DASHBOARD ===== */
-/* Mobile-first, responsive design */
+/* Mobile-first, responsive design with navbar */
 :root {
   --primary: #4361ee;
   --primary-light: #eef1fd;
@@ -39,8 +39,83 @@ html {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 0;
   margin: 0;
+  padding: 0;
+}
+
+/* ===== NAVIGATION BAR ===== */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: max(1rem, env(safe-area-inset-top)) 1.5rem 1rem;
+  background-color: white;
+  box-shadow: var(--shadow-sm);
+  z-index: 1000;
+  height: 70px;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-left: 1rem;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-right: 1rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.user-class {
+  font-size: 0.8rem;
+  color: var(--gray);
+}
+
+.navbar .logout-button {
+  background: none;
+  border: 1px solid var(--gray-light);
+  color: var(--danger);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.navbar .logout-button:hover {
+  background-color: var(--danger-light);
+  transform: translateY(-2px);
 }
 
 /* ===== DASHBOARD CONTAINER ===== */
@@ -48,20 +123,23 @@ html {
   max-width: 100%;
   padding: 1rem;
   margin: 0 auto;
+  margin-top: 70px;
+  /* Space for fixed navbar */
   display: flex;
   flex-direction: column;
   gap: var(--section-gap);
 }
 
-/* ===== HEADER SECTION ===== */
+/* ===== HEADER SECTION - SAFE AREA FIX ===== */
 .dashboard-header {
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   border-radius: var(--border-radius);
-  padding: 1.5rem;
   color: white;
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+  padding: 1.5rem;
+  margin-top: 0.5rem;
 }
 
 .dashboard-header::before {
@@ -148,8 +226,7 @@ html {
   margin: 0.5rem 0;
 }
 
-.attendance-button,
-.logout-button {
+.attendance-button {
   flex: 1;
   min-width: 140px;
   padding: 1rem;
@@ -164,9 +241,6 @@ html {
   justify-content: center;
   gap: 0.75rem;
   box-shadow: var(--shadow-sm);
-}
-
-.attendance-button {
   background: linear-gradient(135deg, var(--success) 0%, #22c55e 100%);
   color: white;
 }
@@ -182,18 +256,6 @@ html {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
-}
-
-.logout-button {
-  background: white;
-  color: var(--danger);
-  border: 1px solid var(--gray-light);
-}
-
-.logout-button:hover {
-  background: var(--danger-light);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 /* ===== ATTENDANCE INFO SECTION ===== */
@@ -321,13 +383,41 @@ html {
     flex-direction: column;
   }
 
-  .attendance-button,
-  .logout-button {
+  .attendance-button {
     width: 100%;
   }
 
   .stat-value {
     font-size: 1.75rem;
+  }
+
+  .navbar {
+    padding: max(1rem, env(safe-area-inset-top)) 1rem 1rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.3rem;
+  }
+
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+  }
+
+  .navbar .logout-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-user {
+    gap: 0.5rem;
+  }
+
+  .user-info {
+    display: none;
+    /* Hide user info on small screens */
   }
 }
 
@@ -362,5 +452,43 @@ html {
 
   .attendance-info h3 {
     font-size: 1.25rem;
+  }
+
+  .navbar {
+    padding: max(0.8rem, env(safe-area-inset-top)) 0.8rem 0.8rem;
+    height: 60px;
+  }
+
+  .navbar-user {
+    gap: 0.7rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.2rem;
+    margin-left: 0.5rem;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+
+  .user-name {
+    font-size: 0.85rem;
+  }
+
+  .user-class {
+    font-size: 0.7rem;
+  }
+
+  .navbar .logout-button {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+  }
+
+  .dashboard-container {
+    margin-top: 60px;
+    /* Adjusted for smaller navbar */
   }
 }
